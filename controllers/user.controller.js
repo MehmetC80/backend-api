@@ -48,11 +48,71 @@ exports.signup = async (req, res) => {
 
     // return res.status(201).json({ user, msg: 'user in die DB eingefügt' });
   } catch (err) {
+    return res.status(400).json({
+      error: err,
+      msg: 'server fehler user kann nicht erstellt werden',
+    });
+  }
+};
+
+// user login
+
+exports.login = async (req, res) => {
+  try {
+    //take info from user
+
+    const { email, password } = req.body;
+
+    //checks
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ msg: 'Email und Passwort  müssen vollständig sein' });
+    }
+
+    //find user based n email
+
+    const user = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    // When there is no user
+    if (!user) {
+      return res.status(401).json({ msg: 'User ist nicht registiert' });
+    }
+
+    const match = await bcrypt.compare(password, user.password);
+
+    //user us there
+
+    // pasword mismatch
+    if (!match) {
+      // throw Error('Password ist falsch!!!');
+      return res.status(400).json({ error: 'Password ist falsch!!!' });
+    }
+
+    //user is there and validated
+
+    cookieToken(user, res);
+  } catch (err) {
+    res.status(400).json({
+      error: err,
+      msg: 'server fehler user kann nicht eingeloggt werden',
+    });
+  }
+};
+
+//logout user
+
+exports.logout = async (req, res) => {
+  try {
+    res.clearCookie('cookieToken');
+    res.status(200).json({ success: true });
+  } catch (err) {
     return res
       .status(400)
-      .json({
-        error: err,
-        msg: 'server fehler user kann nicht erstellt werden',
-      });
+      .json({ error: err, msg: 'logout ist fehlgeschlagen' });
   }
 };
