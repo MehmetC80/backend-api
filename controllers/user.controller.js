@@ -96,6 +96,7 @@ exports.login = async (req, res) => {
     //user is there and validated
 
     cookieToken(user, res);
+    console.log(user, cookieToken.name);
   } catch (err) {
     res.status(400).json({
       error: err,

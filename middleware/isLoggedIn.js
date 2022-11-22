@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 const isLoggedIn = async (req, res, next) => {
   try {
-    const token = req.cookie.token;
+    const token = req.cookies.cookieToken;
 
     if (!token) {
       return res.status(400).json({ msg: 'bitte log dich ein' });
