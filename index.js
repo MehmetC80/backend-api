@@ -15,9 +15,14 @@ app.use(express.urlencoded({ extended: true }));
 // cookie middleware
 app.use(cookieParser());
 
+// routes
+const userRouter = require('./routes/user.route');
+
 app.get('/', (req, res) => {
   res.send('Hallo das ist die erste Nachicht');
 });
+
+app.use('/api', userRouter);
 
 app.listen(port, () => {
   console.log(`server läuft auf http://localhost:${port} !!!`);
